@@ -53,11 +53,11 @@ update_dateも更新する。
 - ename varchar 255 英語名称
 - flist varchar 1024 周波数リスト
 
-テーブル名 gropus
+テーブル名 groups
 - ID unsigned_int グループ名のID
 - gname varchar 255 グループ名
 
-テーブル名 subgropus
+テーブル名 subgroups
 - ID unsigned_int サブグループ名のid
 - gid unsined_int 親のグループ名のid
 - sname varchar 255 サブグループ名
