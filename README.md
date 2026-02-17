@@ -1,4 +1,4 @@
-# システム仕様書：Remedy Maker V2. コントロールシステム (Version 3.0)
+# システム仕様書：レメディ生成機コントロールシステム (Version 3.0)
 
 ## 1. システム概要
 本システムは、USB接続されたレメディ生成機をブラウザから直接制御するためのWebアプリケーションである。
@@ -27,16 +27,35 @@ Windowsアプリ（Visual Basic等）からの脱却を図り、ChromeOS (Chrome
 | memo | TEXT | 備考 |
 
 ### 2-2. 研修履歴 (user_learning)
-ユーザーが受講した研修コードを管理する。
 | カラム名 | 型 | 説明 |
 | :--- | :--- | :--- |
 | user_id | INT | users.id と紐付け |
 | learning_id | VARCHAR(50) | 研修コード |
 
 ### 2-3. 周波数データ (groups / subgroups / frequencies)
-- **groups**: `id`, `gname`, `learning_id` (空の場合は全公開)
-- **subgroups**: `id`, `gid` (親グループID), `sname`
-- **frequencies**: `id`, `sid` (サブグループID), `jname`, `ename`, `flist` (カンマ区切り周波数文字列)
+
+**テーブル名: groups (周波数グループ)**
+| カラム名 | 型 | 説明 |
+| :--- | :--- | :--- |
+| id | INT AI PK | グループID |
+| gname | VARCHAR(255) | グループ名 |
+| learning_id | VARCHAR(50) | 属する研修ID（空の場合は全公開） |
+
+**テーブル名: subgroups (周波数サブグループ)**
+| カラム名 | 型 | 説明 |
+| :--- | :--- | :--- |
+| id | INT AI PK | サブグループID |
+| gid | INT | 親グループID (groups.id) |
+| sname | VARCHAR(255) | サブグループ名 |
+
+**テーブル名: frequencies (周波数リスト)**
+| カラム名 | 型 | 説明 |
+| :--- | :--- | :--- |
+| id | INT AI PK | 周波数ID |
+| sid | INT | サブグループID (subgroups.id) |
+| jname | VARCHAR(255) | 日本語名称 |
+| ename | VARCHAR(255) | 英語名称 |
+| flist | TEXT | 周波数リスト（カンマ区切り文字列） |
 
 ### 2-4. ユーザーカスタムデータ (user_custom_frequencies)
 | カラム名 | 型 | 説明 |
