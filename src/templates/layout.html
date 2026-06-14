@@ -1,0 +1,273 @@
+<!-- templates/layout.html -->
+<!DOCTYPE html>
+<html lang="ja">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>{{title}}</title>
+    <link rel="stylesheet" href="assets/style.css">
+</head>
+<body>
+
+<header>
+    <h2>{{title}} (Ver {{version}})</h2>
+    <div id="header-user-info" class="hidden">
+        <span id="login-user-name"></span> さん 
+        <button id="admin-toggle-btn" class="hidden" onclick="toggleAdminView()">管理画面へ</button>
+        <button onclick="handleLogout()" class="danger">ログアウト</button>
+    </div>
+</header>
+
+<div class="container">
+
+    <!-- 1. ログイン画面 -->
+    <div id="login-section" class="card" style="max-width: 400px; margin: 100px auto;">
+        <h3 class="text-center">ログイン</h3>
+        <div id="login-step1">
+            <label for="login-email">メールアドレス</label>
+            <input type="email" id="login-email" placeholder="example@example.com">
+            <button onclick="requestPasskey()" style="width: 100%;">パスキー送信</button>
+        </div>
+        <div id="login-step2" class="hidden">
+            <p style="font-size:13px; color:#555;">送信された8桁の数字パスコードを入力してください（有効期限5分）。</p>
+            <label for="login-code">認証コード (8桁)</label>
+            <input type="text" id="login-code" placeholder="00000000" maxlength="8">
+            <button onclick="verifyPasskey()" style="width: 100%;">ログイン</button>
+            <p id="debug-otp-area" style="font-size:12px; color:blue; margin-top:10px;"></p>
+        </div>
+
+        <!-- ★ 動作に必要な環境の四角枠案内（簡潔にまとめてあります） -->
+        <div style="margin-top: 25px; padding: 12px; border: 1px solid #dcdde1; border-radius: 6px; background-color: #f8f9fa; font-size: 11px; line-height: 1.6; color: #2f3640;">
+            <strong style="display: block; margin-bottom: 6px; color: #2c3e50; font-size: 12px;">⚠️ 動作に必要な環境</strong>
+            <ul style="margin: 0; padding-left: 15px; list-style-type: disc;">
+                <li><strong>パソコン専用</strong>のシステムです（Windows、Mac、Chromebook）。</li>
+                <li>インターネットを開くブラウザは必ず <strong>Google Chrome</strong> をご使用ください。</li>
+                <li>※スマートフォンやタブレット（iPad / Android）では接続機能が動作しません。</li>
+            </ul>
+        </div>
+    </div>
+
+    <!-- 2. メイン操作画面 (SPA) -->
+    <div id="main-section" class="hidden">
+        <div class="flex-container">
+            <div class="flex-col" style="flex: 2;">
+                <div class="card">
+                    <h4>周波数ブラウザ</h4>
+                    <input type="text" id="search-input" placeholder="日本語名、英語名、周波数でリアルタイム検索..." oninput="filterFrequencies()">
+                    
+                    <h5>グループ</h5>
+                    <div class="scrollable-table">
+                        <table id="groups-table">
+                            <thead><tr><th>グループ名</th></tr></thead>
+                            <tbody></tbody>
+                        </table>
+                    </div>
+
+                    <h5>サブグループ</h5>
+                    <div class="scrollable-table">
+                        <table id="subgroups-table">
+                            <thead><tr><th>サブグループ名</th></tr></thead>
+                            <tbody></tbody>
+                        </table>
+                    </div>
+
+                    <h5>周波数リスト</h5>
+                    <div class="scrollable-table">
+                        <table id="frequencies-table">
+                            <!-- ★ カラム数をスリム化し「名称」と「周波数リスト」の2列に変更しました -->
+                            <thead><tr><th>名称</th><th>周波数リスト</th></tr></thead>
+                            <tbody></tbody>
+                        </table>
+                    </div>
+                </div>
+            </div>
+
+            <div class="flex-col" style="flex: 1.2;">
+                <div class="card">
+                    <h4>実行コントロール</h4>
+                    <p><strong>現在の接続状態:</strong> <span id="serial-status" style="color:red; font-weight:bold;">未接続</span></p>
+                    <button onclick="showConnectModal()">⚙ 接続設定</button>
+                    
+                    <div style="margin-top: 15px;">
+                        <label>送信対象の周波数配列:</label>
+                        <textarea id="target-frequencies" rows="3" readonly style="background:#e9ecef; resize:none;"></textarea>
+                    </div>
+
+                    <div style="margin-top:15px; display:flex; gap:10px;">
+                        <button id="start-btn" onclick="startTransmission()" style="flex:1; background-color:#2ecc71;">書き込み（開始）</button>
+                        <button id="stop-btn" onclick="stopTransmission()" class="danger" style="flex:1;" disabled>中止</button>
+                    </div>
+
+                    <!-- 送信進捗エリア -->
+                    <div id="progress-area" class="hidden" style="margin-top: 15px; padding: 10px; border: 1px solid var(--border-color); border-radius: 4px;">
+                        <p style="margin: 5px 0;">現在送信中: <span id="current-freq" style="font-weight:bold; color:var(--accent-color);">-</span> KHz</p>
+                        <p style="margin: 5px 0;">次の周波数まで残り: <span id="countdown-sec" style="font-weight:bold;">-</span> 秒</p>
+                        <div class="progress-bar">
+                            <div id="progress-bar-inner" class="progress-bar-inner"></div>
+                        </div>
+                        <p style="margin: 5px 0; font-size:12px; text-align:right;">全体の進捗: <span id="overall-progress">-</span></p>
+                    </div>
+                </div>
+
+                <!-- カスタム周波数 -->
+                <div class="card">
+                    <h4>カスタム周波数リスト</h4>
+                    <div class="scrollable-table" style="max-height:150px;">
+                        <table id="custom-table">
+                            <thead><tr><th>名称</th><th>周波数</th></tr></thead>
+                            <tbody></tbody>
+                        </table>
+                    </div>
+                    <button onclick="showCustomModal()" style="margin-top: 10px; width:100%;">新規カスタムデータ登録</button>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <!-- 3. 管理画面 -->
+    <div id="admin-section" class="hidden">
+        <div class="card">
+            <div style="display:flex; justify-content:space-between; align-items:center;">
+                <h3>システム管理者画面</h3>
+                <button onclick="toggleAdminView()" style="background-color: #7f8c8d;">操作画面に戻る</button>
+            </div>
+            
+            <div style="display:flex; gap:10px; margin-top:15px;">
+                <button onclick="switchAdminTab('users')">ユーザー管理</button>
+                <button onclick="switchAdminTab('masters')">周波数マスタ管理</button>
+            </div>
+
+            <!-- ユーザー管理タブ -->
+            <div id="admin-tab-users" class="admin-tab">
+                <h4 style="margin-top:20px;">登録ユーザー一覧</h4>
+                <button onclick="showUserFormModal()">新規ユーザー追加</button>
+                <table id="admin-users-table">
+                    <thead>
+                        <tr><th>名前</th><th>メールアドレス</th><th>支払</th><th>権限</th><th>研修履歴</th><th>操作</th></tr>
+                    </thead>
+                    <tbody></tbody>
+                </table>
+            </div>
+
+            <!-- マスタ管理タブ -->
+            <div id="admin-tab-masters" class="admin-tab hidden">
+                <h4 style="margin-top:20px;">周波数構造メンテナンス</h4>
+                <div class="flex-container">
+                    <div class="flex-col">
+                        <h5>① グループ</h5>
+                        <button onclick="showGroupModal()">新規グループ</button>
+                        <table id="admin-groups-table"><thead><tr><th>ID</th><th>グループ名</th><th>研修ID</th><th>操作</th></tr></thead><tbody></tbody></table>
+                    </div>
+                    <div class="flex-col">
+                        <h5>② サブグループ</h5>
+                        <button onclick="showSubgroupModal()">新規サブグループ</button>
+                        <table id="admin-subgroups-table"><thead><tr><th>ID</th><th>親ID</th><th>サブグループ名</th><th>操作</th></tr></thead><tbody></tbody></table>
+                    </div>
+                </div>
+                <div style="margin-top:20px;">
+                    <h5>③ 周波数リスト</h5>
+                    <button onclick="showFrequencyModal()">新規周波数リスト</button>
+                    <table id="admin-frequencies-table"><thead><tr><th>ID</th><th>サブID</th><th>日本語名</th><th>英語名</th><th>リスト</th><th>操作</th></tr></thead><tbody></tbody></table>
+                </div>
+            </div>
+        </div>
+    </div>
+
+</div>
+
+<!-- モーダル・ダイアログ群 -->
+<div id="connect-modal" class="modal">
+    <div class="modal-content">
+        <h3>接続設定</h3>
+        <p style="font-size:12px; color:#666;">※本システムは毎回明示的な接続が必要です。</p>
+        <div style="margin-bottom:15px;">
+            <button onclick="requestSerialPort()" style="width:100%; background-color:#34495e;">1. デバイス（生成機）を選択</button>
+            <p style="font-size:12px; text-align:center;">現在の選択状況: <span id="selected-port-name" style="font-weight:bold;">未選択</span></p>
+        </div>
+        <div>
+            <label for="interval-sec">2. ひとつの周波数の継続待機秒数</label>
+            <input type="number" id="interval-sec" value="20" min="1">
+        </div>
+        <div style="margin-top:20px; display:flex; gap:10px;">
+            <button onclick="saveConnectionSettings()" style="flex:1;">保存して閉じる</button>
+            <button onclick="closeModal('connect-modal')" style="flex:1; background-color:#95a5a6;">キャンセル</button>
+        </div>
+    </div>
+</div>
+
+<div id="custom-modal" class="modal">
+    <div class="modal-content">
+        <h3 id="custom-modal-title">カスタム周波数の保存</h3>
+        <input type="hidden" id="custom-id">
+        <label for="custom-name">名称</label>
+        <input type="text" id="custom-name" placeholder="例: マイ調整波形">
+        <label for="custom-flist">周波数リスト（カンマ区切り）</label>
+        <input type="text" id="custom-flist" placeholder="例: 10,12.5,23.1">
+        <p style="font-size:11px; color:#e74c3c; margin:0;">※半角数字、小数点、カンマのみ使用可能です。</p>
+        <div style="margin-top:20px; display:flex; gap:10px;">
+            <button onclick="saveCustomFrequency()" style="flex:1;">保存</button>
+            <button id="custom-delete-btn" onclick="deleteCustomFrequency()" class="danger hidden" style="flex:1;">削除</button>
+            <button onclick="closeModal('custom-modal')" style="flex:1; background-color:#95a5a6;">キャンセル</button>
+        </div>
+    </div>
+</div>
+
+<div id="user-form-modal" class="modal">
+    <div class="modal-content">
+        <h3>ユーザー情報登録/編集</h3>
+        <input type="hidden" id="admin-user-id">
+        <label for="admin-user-name">氏名</label>
+        <input type="text" id="admin-user-name">
+        <label for="admin-user-email">メールアドレス</label>
+        <input type="email" id="admin-user-email">
+        <label for="admin-user-paid">支払いステータス</label>
+        <select id="admin-user-paid">
+            <option value="0">未払い</option>
+            <option value="1">支払い済み</option>
+        </select>
+        <label for="admin-user-role">権限</label>
+        <select id="admin-user-role">
+            <option value="regular">一般 (regular)</option>
+            <option value="admin">管理者 (admin)</option>
+        </select>
+        <label for="admin-user-learnings">研修履歴（カンマ区切りで入力）</label>
+        <input type="text" id="admin-user-learnings" placeholder="例: advance1, basic">
+        <label for="admin-user-memo">備考</label>
+        <textarea id="admin-user-memo" rows="2"></textarea>
+        <div style="margin-top:20px; display:flex; gap:10px;">
+            <button onclick="adminSaveUser()" style="flex:1;">保存</button>
+            <button id="admin-user-delete-btn" onclick="adminDeleteUser()" class="danger hidden" style="flex:1;">削除</button>
+            <button onclick="closeModal('user-form-modal')" style="flex:1; background-color:#95a5a6;">キャンセル</button>
+        </div>
+    </div>
+</div>
+
+<div id="group-modal" class="modal"><div class="modal-content">
+    <h3>グループ登録/編集</h3>
+    <input type="hidden" id="master-group-id">
+    <label for="master-group-name">グループ名</label><input type="text" id="master-group-name">
+    <label for="master-group-learning">紐付け研修ID（空なら全公開）</label><input type="text" id="master-group-learning">
+    <div style="margin-top:20px; display:flex; gap:10px;"><button onclick="saveMasterGroup()" style="flex:1;">保存</button><button onclick="closeModal('group-modal')" style="flex:1; background-color:#95a5a6;">キャンセル</button></div>
+</div></div>
+
+<div id="subgroup-modal" class="modal"><div class="modal-content">
+    <h3>サブグループ登録/編集</h3>
+    <input type="hidden" id="master-subgroup-id">
+    <label for="master-subgroup-gid">親グループ</label><select id="master-subgroup-gid"></select>
+    <label for="master-subgroup-name">サブグループ名</label><input type="text" id="master-subgroup-name">
+    <div style="margin-top:20px; display:flex; gap:10px;"><button onclick="saveMasterSubgroup()" style="flex:1;">保存</button><button onclick="closeModal('subgroup-modal')" style="flex:1; background-color:#95a5a6;">キャンセル</button></div>
+</div></div>
+
+<div id="frequency-modal" class="modal"><div class="modal-content">
+    <h3>周波数マスタ登録/編集</h3>
+    <input type="hidden" id="master-freq-id">
+    <label for="master-freq-sid">サブグループ</label><select id="master-freq-sid"></select>
+    <label for="master-freq-jname">日本語名</label><input type="text" id="master-freq-jname">
+    <label for="master-freq-ename">英語名</label><input type="text" id="master-freq-ename">
+    <label for="master-freq-flist">周波数リスト（カンマ区切り）</label><input type="text" id="master-freq-flist">
+    <div style="margin-top:20px; display:flex; gap:10px;"><button onclick="saveMasterFrequency()" style="flex:1;">保存</button><button onclick="closeModal('frequency-modal')" style="flex:1; background-color:#95a5a6;">キャンセル</button></div>
+</div></div>
+
+<script src="assets/app.js"></script>
+</body>
+</html>

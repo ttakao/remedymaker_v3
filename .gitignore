@@ -3,5 +3,4 @@
 Thumbs.db
 
 # 移行データ
-olddata/
-
+conversion/
