@@ -1,0 +1,33 @@
+groups;16;アドバンス２
+subgroups;61;16;免疫応答
+subgroups;62;16;抗体の取り込み
+subgroups;63;16;炎症の抑制
+subgroups;64;16;ミクログリアの炎症抑制
+subgroups;65;16;アポトーシス
+subgroups;66;16;血管
+subgroups;67;16;がん
+frequencies;336;61;TregのCTLA4;Treg CTLA4;77.99
+frequencies;337;61;TregのCTLA4;Treg CTLA4;5.924
+frequencies;338;61;転写因子たんぱく遺伝子増加;BATF;83.46
+frequencies;339;62;ABLチロシンキナーゼ阻害;ABL tyrosine kinase inhibition;6.08,0.76
+frequencies;340;62;ATP8A1-CDC50複合体;ATP8A1-CDC50 complex;97.64
+frequencies;341;63;DOCK8増加;DOCK8 increase;8.059
+frequencies;342;63;IL-6;IL-6;60.00,8.908
+frequencies;343;63;CCL2抑制;CCL2 suppression;7.84
+frequencies;344;63;FcεRI阻害;FcεRI;3.49
+frequencies;345;63;肥満細胞のCD300a機能向上;MASTcell-CD300a;950.09
+frequencies;346;64;CD68発現抑制;CD68 Expression Suppression;73.98
+frequencies;347;64;L-Hジペプチド;L-H depeptide;82.84
+frequencies;348;64;ベタインアルデヒドデヒドロゲナーゼ;Betainealdehyde dehydrogenase;39.0809
+frequencies;349;64;SOD2;SOD2;890.08,9.003
+frequencies;350;64;SOD1;SOD1;890.08,30.88
+frequencies;351;65;ポリADPリボースポリメラーゼ;PARP;30.738
+frequencies;352;66;LDLリサイクル阻害;LDL Recycling Inhition;32.358
+frequencies;353;66;アディポネクチン;adiponectin;83.36
+frequencies;354;66;PCSK9;PCSK9;90.09
+frequencies;355;66;内皮型NOS(eNOS)促進;Endothelial NOS promotion;809.04,30.64,68.26
+frequencies;356;67;可溶性RANKL低減;Reduce soluble RANKL;83.49
+frequencies;357;67;VASH2阻害;VASH2 inhibition;68.08
+frequencies;358;67;FGF2増加;FGF2 increas;83.46,
+frequencies;359;67;Bet1MT1-MMP作用阻害;Bet1MT1-MMP inhibitory action;8.009,30.78,840.09,994.84
+frequencies;360;67;Myc;Myc;8.077

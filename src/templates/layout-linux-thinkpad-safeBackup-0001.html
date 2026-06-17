@@ -4,7 +4,7 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>{{title}}</title>
+    <title>Remedy Maker V.3</title>
     <link rel="stylesheet" href="assets/style.css">
 </head>
 <body>
@@ -35,16 +35,6 @@
             <button onclick="verifyPasskey()" style="width: 100%;">ログイン</button>
             <p id="debug-otp-area" style="font-size:12px; color:blue; margin-top:10px;"></p>
         </div>
-
-        <!-- ★ 動作に必要な環境の四角枠案内（簡潔にまとめてあります） -->
-        <div style="margin-top: 25px; padding: 12px; border: 1px solid #dcdde1; border-radius: 6px; background-color: #f8f9fa; font-size: 11px; line-height: 1.6; color: #2f3640;">
-            <strong style="display: block; margin-bottom: 6px; color: #2c3e50; font-size: 12px;">⚠️ 動作に必要な環境</strong>
-            <ul style="margin: 0; padding-left: 15px; list-style-type: disc;">
-                <li><strong>パソコン専用</strong>のシステムです（Windows、Mac、Chromebook）。</li>
-                <li>インターネットを開くブラウザは必ず <strong>Google Chrome</strong> をご使用ください。</li>
-                <li>※スマートフォンやタブレット（iPad / Android）では接続機能が動作しません。</li>
-            </ul>
-        </div>
     </div>
 
     <!-- 2. メイン操作画面 (SPA) -->
@@ -74,7 +64,6 @@
                     <h5>周波数リスト</h5>
                     <div class="scrollable-table">
                         <table id="frequencies-table">
-                            <!-- ★ カラム数をスリム化し「名称」と「周波数リスト」の2列に変更しました -->
                             <thead><tr><th>名称</th><th>周波数リスト</th></tr></thead>
                             <tbody></tbody>
                         </table>
@@ -100,7 +89,7 @@
 
                     <!-- 送信進捗エリア -->
                     <div id="progress-area" class="hidden" style="margin-top: 15px; padding: 10px; border: 1px solid var(--border-color); border-radius: 4px;">
-                        <p style="margin: 5px 0;">現在送信中: <span id="current-freq" style="font-weight:bold; color:var(--accent-color);">-</span> KHz</p>
+                        <p style="margin: 5px 0;">現在送信中: <span id="current-freq" style="font-weight:bold; color:var(--accent-color);">-</span> Hz</p>
                         <p style="margin: 5px 0;">次の周波数まで残り: <span id="countdown-sec" style="font-weight:bold;">-</span> 秒</p>
                         <div class="progress-bar">
                             <div id="progress-bar-inner" class="progress-bar-inner"></div>

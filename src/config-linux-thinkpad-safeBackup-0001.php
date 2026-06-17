@@ -1,16 +1,13 @@
 <?php
 // config.php
-ini_set('session.gc_maxlifetime', 86400);
-ini_set('session.cookie_lifetime', 86400);
+ini_set('session.gc_maxlifetime', 43200);
+ini_set('session.cookie_lifetime', 43200);
 session_set_cookie_params(43200);
 session_start();
 
-// タイムゾーンを日本時間に固定します
-date_default_timezone_set('Asia/Tokyo');
-
 define('DEBUG_MODE', false); // 本番運用のときは false にします
 
-define('MAIL_SENDER', 'support@mind-craft.net');
+define('MAIL_SENDER', 'ttakao@mind-craft.net');
 
 define('DB_HOST', 'mysql401.phy.lolipop.lan'); 
 define('DB_USER', 'LA11154208');

@@ -65,10 +65,8 @@ switch ($action) {
         $code = sprintf("%08d", random_int(0, 99999999));
         $hash = password_hash($code, PASSWORD_DEFAULT);
 
-        // PHP側の日本標準時刻を明示的にバインドして時差問題を防止します
-        $now = date('Y-m-d H:i:s');
-        $stmt = $pdo->prepare("UPDATE `users` SET `passkey_hash` = ?, `update_date` = ? WHERE `id` = ?");
-        $stmt->execute([$hash, $now, $user['id']]);
+        $stmt = $pdo->prepare("UPDATE `users` SET `passkey_hash` = ?, `update_date` = NOW() WHERE `id` = ?");
+        $stmt->execute([$hash, $user['id']]);
 
         $_SESSION['debug_otp'] = $code; 
 
@@ -83,11 +81,9 @@ switch ($action) {
         mb_internal_encoding("UTF-8");
         $subject = "【レメディシステム】認証コードのお知らせ";
         $message = "認証コード: {$code}\n※有効期限は5分間です。3回間違えると30分間ロックされます。";
-        
-        // config.phpに定義した定数 MAIL_SENDER を結合してヘッダーを作成します
-        $headers = "From: " . MAIL_SENDER . "\r\n";
+        $headers = "From: {$MAIL_SENDER}\r\n";
 
-        if (mb_send_mail($email, $subject, $message, $headers, "-f" . MAIL_SENDER)) {
+        if (mb_send_mail($email, $subject, $message, $headers, "-f{$MAIL_SENDER}")) {
             respond('success', '認証コードをメールで送信しました。');
         } else {
             respond('success', '認証コードを発行しました（ローカル確認用）。', ['debug_otp' => $code]);
@@ -117,7 +113,6 @@ switch ($action) {
             respond('error', 'アカウントはロックされています。');
         }
 
-        // データベースから取得した登録時間と、PHPの現在時間を日本時間基準で比較します
         $update_time = strtotime($user['update_date']);
         if ((time() - $update_time) > 300) {
             respond('error', '認証コードの有効期限（5分）が切れています。再度送信してください。');
@@ -182,6 +177,7 @@ switch ($action) {
         $learnings[] = ''; 
 
         $in_clause = str_repeat('?,', count($learnings) - 1) . '?';
+        // ★ MySQL 8.0 の予約語対策として groups を `groups` に修正しました
         $stmt = $pdo->prepare("SELECT * FROM `groups` WHERE `learning_id` IS NULL OR `learning_id` IN ($in_clause)");
         $stmt->execute($learnings);
         $groups = $stmt->fetchAll();
@@ -207,12 +203,14 @@ switch ($action) {
             }
         }
 
+        // user_custom_frequencies もテーブル名を安全にエスケープ
         $customs = [];
         try {
             $stmt = $pdo->prepare("SELECT * FROM `user_custom_frequencies` WHERE `user_id` = ?");
             $stmt->execute([$user_id]);
             $customs = $stmt->fetchAll();
         } catch (PDOException $e) {
+            // テーブルがまだ作られていない場合のフォールバック（空配列として扱い稼働させます）
             $customs = [];
         }
 

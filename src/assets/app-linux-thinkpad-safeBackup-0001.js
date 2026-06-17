@@ -290,7 +290,7 @@ async function startTransmission() {
         }
     } catch (e) {
         alert("シリアル通信エラー: " + e.message);
-   } finally {
+    } finally {
         isTransmitting = false;
         if (writer) try { writer.releaseLock(); } catch(err){}
         if (reader) try { reader.releaseLock(); } catch(err){}
@@ -301,12 +301,6 @@ async function startTransmission() {
         document.getElementById('progress-area').classList.add('hidden');
         document.getElementById('serial-status').innerText = "接続待機中 (切断)";
         document.getElementById('serial-status').style.color = "orange";
-
-        // ★ 途中で「中止」されたときは鳴らさず、完走したときだけ綺麗なベル音を鳴らします
-        if (!abortController) {
-            playBellSound();
-        }
-
         alert(abortController ? "処理を停止しました。" : "すべての処理が終了しました。");
         abortController = null;
     }
@@ -636,39 +630,4 @@ function closeModal(id) { document.getElementById(id).style.display = 'none'; }
 function escapeHtml(str) {
     if (!str) return '';
     return str.replace(/&/g, '&amp;').replace(/</g, '&lt;').replace(/>/g, '&gt;').replace(/"/g, '&quot;').replace(/'/g, '&#039;');
-}
-
-/**
- * 外部音源ファイル不要で、ブラウザ上で綺麗なベル音（チーン♪）を合成して鳴らす関数
- */
-function playBellSound() {
-    try {
-        const AudioContext = window.AudioContext || window.webkitAudioContext;
-        if (!AudioContext) return;
-
-        const audioCtx = new AudioContext();
-        
-        // オシレーター（音波の発振器）と ゲイン（音量コントローラー）を作成
-        const oscillator = audioCtx.createOscillator();
-        const gainNode = audioCtx.createGain();
-
-        oscillator.connect(gainNode);
-        gainNode.connect(audioCtx.destination);
-
-        // きれいな正弦波（サイン波）を生成
-        oscillator.type = 'sine';
-        
-        // 音の高さ（ヘルツ）：2048Hz（澄んだ金属音の高さ）に設定
-        oscillator.frequency.setValueAtTime(2048, audioCtx.currentTime);
-
-        // 音量の調整（最初は0.3、そこから1.5秒かけて滑らかに音を消して、余韻を表現します）
-        gainNode.gain.setValueAtTime(0.3, audioCtx.currentTime);
-        gainNode.gain.exponentialRampToValueAtTime(0.001, audioCtx.currentTime + 1.5);
-
-        // 再生の開始と停止（余韻を持たせるため1.5秒再生します）
-        oscillator.start(audioCtx.currentTime);
-        oscillator.stop(audioCtx.currentTime + 1.5);
-    } catch (e) {
-        console.error("音再生エラー:", e);
-    }
 }

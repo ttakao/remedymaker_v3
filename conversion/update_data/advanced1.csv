@@ -1,0 +1,49 @@
+groups;12;免疫(アドバンス)
+groups;13;代謝経路(アドバンス)
+subgroups;40;12;免疫活性
+subgroups;41;12;細胞活性
+subgroups;42;12;抗腫瘍
+subgroups;43;12;抗酸化
+subgroups;44;13;葉酸回路
+subgroups;45;13;尿素回路
+subgroups;46;13;代謝経路
+subgroups;47;13;神経伝達物質代謝
+subgroups;48;13;メチオニン回路と葉酸回路
+subgroups;49;13;メチオニン回路
+subgroups;50;13;HB4回路
+frequencies;300;40;パイエル板;Peyer's patches;6.00,83.06
+frequencies;301;40;ランゲルハンス細胞;Langerhans cell;610.70,0.46
+frequencies;302;40;NK細胞;NK cell;80.09
+frequencies;303;40;プロテオグリカン;Proteogrycan;0.008
+frequencies;304;41;AMP活性型プロテインキナーゼ;AMPK;70.70,89.082,105.343
+frequencies;305;41;アディポネクチン;Adiponectin;83.36
+frequencies;306;41;テロメラーゼ;Telomerase;12.77
+frequencies;307;42;細胞死関連タンパク質キナーゼ3;DAPK3;60.00
+frequencies;308;42;アポトーシス誘導物質トリプトフォール;tryptophol;64.70
+frequencies;309;42;ユビキチンリガーゼ;Ubiquitin;99.08
+frequencies;310;42;パラスポリン;Parasporin;607.89
+frequencies;311;42;P53;P53;80.009
+frequencies;312;43;グルタチオンS転移酵素;GST;99.80
+frequencies;313;43;スーパーオキサイドジスムターゼ;SOD;890.08
+frequencies;314;43;グルタチオン;GSH;60.77
+frequencies;315;44;セリンヒドロキシメチル基転移酵素;SHMT;76.95
+frequencies;316;44;メチレンテトラヒドロ葉酸還元酵素;MTHFR;60.68
+frequencies;317;45;一酸化窒素合成酵素;NOS;809.04
+frequencies;318;45;オルニチントランスカルバミラーゼ;OTC;70.778,60.46
+frequencies;319;46;Sアデノシルメチオニン;SAM;32.66
+frequencies;320;46;SアデノシルLホモシステイン;SAH;70.00
+frequencies;321;46;SアデノシルLホモシステイン加水分解酵素;SAHH;762.06
+frequencies;322;47;モノアミン酸化酵素 A;MAO A;60.07,90.80
+frequencies;323;47;カテコール-O-メチル基転移酵素;COMT;60.09
+frequencies;324;47;グルタミン酸脱炭酸酵素;GAD;60.01
+frequencies;325;48;5-メチルテトラヒドロ葉酸ホモシステイン-S-メチル基転移酵素;MTR;78.08,82.51
+frequencies;326;48;5-メチルテトラヒドロ葉酸ホモシステイン-S-メチル基転移酵素還元酵素;MTRR;60.07
+frequencies;327;49;メチオニンアデノシル転移酵素;MAT;51.62,80.40,118.59
+frequencies;328;49;ベタインホモシステインSメチル基転移酵素;BHMT;608.07
+frequencies;329;49;S-アデノシルホモステイン加水分解酵素;AHCY;90.74
+frequencies;330;49;シスタチオニンβ合成酵素;CBS;62.50
+frequencies;331;49;亜硫酸酸化酵素;SUOX;89.14
+frequencies;332;49;グルコース-6-リン酸脱水素酵素;G6PDH;76.07
+frequencies;333;49;アンジオテンシン変換酵素;ACE;89.56
+frequencies;334;49;シスタチオニンβリアーゼ;CGL;98.80,833.00
+frequencies;335;50;ジヒドロプテリジン還元酵素;DHPR;864.68
